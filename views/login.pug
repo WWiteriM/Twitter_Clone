@@ -1,0 +1,11 @@
+extends layouts/login-layout
+
+block content
+    .loginContainer
+        h1 Login
+        form(method='post')
+            input(type='text', name='LogUserName', placeholder='Username or email', required='')
+            input(type='password', name='LogPassword', placeholder='Password', required='')
+            input(type='submit', value='login')
+        a(href='/register') Register here!
+
