@@ -1,8 +1,16 @@
-const http = require('http');
+const express = require('express');
 
-const server = http.createServer((req, res) => {
-  res.setHeader('Content-Type', 'text/html');
-  res.write('Hi');
-  res.end();
+const app = express();
+const port = 3000;
+
+app.set('view engine', 'pug');
+app.set('views', 'views');
+
+app.get('/', (req, res) => {
+  const payload = {
+    pageTitle: 'main',
+  };
+  res.status(200).render('home', payload);
 });
-server.listen(3000);
+
+app.listen(port);
