@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
+require('./database');
 const { requireLogin } = require('./middleware');
 const loginRoute = require('./routes/loginRoutes');
 const registerRoute = require('./routes/registerRoutes');
