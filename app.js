@@ -6,6 +6,7 @@ require('./database');
 const { requireLogin } = require('./middleware');
 const loginRoute = require('./routes/loginRoutes');
 const registerRoute = require('./routes/registerRoutes');
+const logoutRoute = require('./routes/logoutRoutes');
 
 const app = express();
 const PORT = 3000;
@@ -25,10 +26,11 @@ app.use(
 
 app.use('/login', loginRoute);
 app.use('/register', registerRoute);
+app.use('/logout', logoutRoute);
 
 app.get('/', requireLogin, (req, res) => {
   const payload = {
-    pageTitle: 'main',
+    pageTitle: 'Main',
     userLoggedIn: req.session.user,
   };
   res.status(200).render('home', payload);
