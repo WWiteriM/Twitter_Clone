@@ -4,8 +4,11 @@ block content
     .loginContainer
         h1 Login
         form(method='post')
-            input(type='text', name='LogUserName', placeholder='Username or email', required='')
-            input(type='password', name='LogPassword', placeholder='Password', required='')
+
+            p.errorMessage #{errorMessage}
+
+            input(type='text', name='LogEmail', placeholder='Email', value=LogEmail)
+            input(type='password', name='LogPassword', placeholder='Password')
             input(type='submit', value='login')
         a(href='/register') Register here!
 

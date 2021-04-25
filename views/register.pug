@@ -7,12 +7,12 @@ block content
 
             p.errorMessage #{errorMessage}
 
-            input(type='text', name='firstName', placeholder='First name', value=firstName, required='')
-            input(type='text', name='lastName', placeholder='Last name', value=lastName, required='')
-            input(type='text', name='username', placeholder='User name', value=username, required='')
-            input(type='email', name='email', placeholder='Email', value=email, required='')
-            input#password(type='password', name='password', placeholder='Password', required='')
-            input#passwordConf(type='password', name='passwordConf', placeholder='Confirm password', required='')
+            input(type='text', name='firstName', placeholder='First name', value=firstName)
+            input(type='text', name='lastName', placeholder='Last name', value=lastName)
+            input(type='text', name='username', placeholder='User name', value=username)
+            input(type='email', name='email', placeholder='Email', value=email)
+            input#password(type='password', name='password', placeholder='Password')
+            input#passwordConf(type='password', name='passwordConf', placeholder='Confirm password')
             input(type='submit', value='Login')
         a(href='/login') Login here
 

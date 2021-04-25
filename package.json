@@ -2,7 +2,7 @@
   "name": "twitter_clone",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "start": "pm2 start ecosystem/ecosystem.config.js",
     "delete": "pm2 delete ecosystem/ecosystem.config.js",
@@ -20,8 +20,10 @@
   },
   "homepage": "https://github.com/WWiteriM/Twitter_Clone#readme",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
+    "express-session": "^1.17.1",
     "mongodb": "^3.6.6",
     "mongoose": "^5.12.5",
     "pug": "^3.0.2",
