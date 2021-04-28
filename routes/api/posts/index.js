@@ -4,9 +4,15 @@ const User = require('../../../schemas/userSchema');
 
 const router = express.Router();
 
-// router.get('/', (req, res) => {
-//
-// });
+router.get('/', async (req, res) => {
+  const results = await Post.find()
+    .populate('postedBy')
+    .catch((err) => {
+      console.log(err);
+      res.sendStatus(400);
+    });
+  return res.status(200).send(results);
+});
 
 router.post('/', async (req, res) => {
   if (!req.body.content) {

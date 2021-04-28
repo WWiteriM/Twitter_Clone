@@ -37,6 +37,7 @@ $('#submitPostButton').click((event) => {
 
 function createPostHtml(postData) {
   const { postedBy } = postData;
+
   const displayName = `${postedBy.firstName} ${postedBy.lastName}`;
   const timestamp = postData.createdAt;
 
