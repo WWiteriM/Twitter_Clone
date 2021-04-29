@@ -33,4 +33,15 @@ router.post('/', async (req, res) => {
   return res.status(201).send(post);
 });
 
+router.put('/:id/like', async (req, res) => {
+  const postId = req.params.id;
+  // eslint-disable-next-line no-underscore-dangle
+  // const userId = req.session.user._id;
+
+  const isLikes = req.session.user.likes && req.session.user.likes.includes(postId);
+  console.log(`Is liked${isLikes}`);
+
+  res.status(200).send('Yaho');
+});
+
 module.exports = router;

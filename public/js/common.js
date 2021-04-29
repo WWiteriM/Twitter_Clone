@@ -35,13 +35,43 @@ $('#submitPostButton').click((event) => {
   });
 });
 
+// eslint-disable-next-line no-undef
+$(document).on('click', '.likeButton', (event) => {
+  // eslint-disable-next-line no-undef
+  const button = $(event.target);
+  const postId = getPostIdFromElement(button);
+
+  if (!postId) return;
+
+  // eslint-disable-next-line no-undef
+  $.ajax({
+    url: `/api/posts/${postId}/like`,
+    type: 'PUT',
+    success: (postData) => {
+      console.log(postData);
+    },
+  });
+});
+
+function getPostIdFromElement(element) {
+  const isRoot = element.hasClass('post');
+  const rootElement = isRoot ? element : element.closest('.post');
+  const postId = rootElement.data().id;
+
+  if (!postId) {
+    return alert('Undef');
+  }
+  return postId;
+}
+
 function createPostHtml(postData) {
   const { postedBy } = postData;
 
   const displayName = `${postedBy.firstName} ${postedBy.lastName}`;
   const timestamp = timeDifference(new Date(), new Date(postData.createdAt));
 
-  return `<div class='post'>
+  // eslint-disable-next-line no-underscore-dangle
+  return `<div class='post' data-id='${postData._id}'>
             <div class='mainContentContainer'>
                 <div class='userImageContainer'>
                     <img src='${postedBy.profilePic}'>
@@ -67,7 +97,7 @@ function createPostHtml(postData) {
                             </button>
                         </div>
                         <div class='postButtonContainer'>
-                            <button>
+                            <button class='likeButton'>
                                 <i class='far fa-heart'></i>
                             </button>
                         </div>
