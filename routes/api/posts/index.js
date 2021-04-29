@@ -7,6 +7,7 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   const results = await Post.find()
     .populate('postedBy')
+    .sort({ createdAt: -1 })
     .catch((err) => {
       console.log(err);
       res.sendStatus(400);
