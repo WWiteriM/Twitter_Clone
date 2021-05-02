@@ -60,6 +60,31 @@ $(document).on('click', '.likeButton', (event) => {
   });
 });
 
+// eslint-disable-next-line no-undef
+$(document).on('click', '.retweetButton', (event) => {
+  // eslint-disable-next-line no-undef
+  const button = $(event.target);
+  const postId = getPostIdFromElement(button);
+
+  if (!postId) return;
+
+  // eslint-disable-next-line no-undef
+  $.ajax({
+    url: `/api/posts/${postId}/retweet`,
+    type: 'POST',
+    success: (postData) => {
+      button.find('span').text(postData.retweetUsers.length || '');
+
+      // eslint-disable-next-line no-underscore-dangle,no-undef
+      if (postData.retweetUsers.includes(userLoggedIn._id)) {
+        button.addClass('active');
+      } else {
+        button.removeClass('active');
+      }
+    },
+  });
+});
+
 function getPostIdFromElement(element) {
   const isRoot = element.hasClass('post');
   const rootElement = isRoot ? element : element.closest('.post');
@@ -72,16 +97,30 @@ function getPostIdFromElement(element) {
 }
 
 function createPostHtml(postData) {
-  const { postedBy } = postData;
+  const isRetweet = postData.retweetData !== undefined;
+  const retweetedBy = isRetweet ? postData.postedBy.username : null;
+  const data = isRetweet ? postData.retweetData : postData;
+
+  const { postedBy } = data;
 
   const displayName = `${postedBy.firstName} ${postedBy.lastName}`;
-  const timestamp = timeDifference(new Date(), new Date(postData.createdAt));
+  const timestamp = timeDifference(new Date(), new Date(data.createdAt));
 
   // eslint-disable-next-line no-undef,no-underscore-dangle
-  const likeButtonActiveClass = postData.likes.includes(userLoggedIn._id) ? 'active' : '';
+  const likeButtonActiveClass = data.likes.includes(userLoggedIn._id) ? 'active' : '';
+  // eslint-disable-next-line no-underscore-dangle,no-undef
+  const retweetButtonActiveClass = data.retweetUsers.includes(userLoggedIn._id) ? 'active' : '';
+
+  let retweetText = '';
+  if (isRetweet) {
+    retweetText = `<span><i class='fas fa-retweet'></i> Retweeted by <a href='/profile/${retweetedBy}'>@${retweetedBy}</a></span>`;
+  }
 
   // eslint-disable-next-line no-underscore-dangle
-  return `<div class='post' data-id='${postData._id}'>
+  return `<div class='post' data-id='${data._id}'>
+            <div class='postActionContainer'>
+                ${retweetText}
+            </div>
             <div class='mainContentContainer'>
                 <div class='userImageContainer'>
                     <img src='${postedBy.profilePic}'>
@@ -95,7 +134,7 @@ function createPostHtml(postData) {
                         <span class='date'>${timestamp}</span>
                     </div>
                     <div class='postBody'>
-                        <span>${postData.content}</span>
+                        <span>${data.content}</span>
                     </div>
                     <div class='postFooter'>
                         <div class='postButtonContainer'>
@@ -104,14 +143,15 @@ function createPostHtml(postData) {
                             </button>
                         </div>
                         <div class='postButtonContainer green'>
-                            <button class='retweet'>
+                            <button class='retweetButton ${retweetButtonActiveClass}'>
                                 <i class='fas fa-retweet'></i>
+                                <span>${data.retweetUsers.length || ''}</span>
                             </button>
                         </div>
                         <div class='postButtonContainer red'>
                             <button class='likeButton ${likeButtonActiveClass}'>
                                 <i class='far fa-heart'></i>
-                                <span>${postData.likes.length || ''}</span>
+                                <span>${data.likes.length || ''}</span>
                             </button>
                         </div>
                     </div>

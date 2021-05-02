@@ -7,6 +7,7 @@
     "start": "pm2 start ecosystem/ecosystem.config.js",
     "delete": "pm2 delete ecosystem/ecosystem.config.js",
     "lint": "eslint \"**/*.js\"",
+    "fix": "eslint \"**/*.js\" --fix",
     "prettier": "prettier --write **/*.js"
   },
   "repository": {
