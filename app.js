@@ -34,6 +34,7 @@ app.get('/', requireLogin, (req, res) => {
   const payload = {
     pageTitle: 'Main',
     userLoggedIn: req.session.user,
+    userLoggedInJs: JSON.stringify(req.session.user),
   };
   res.status(200).render('home', payload);
 });

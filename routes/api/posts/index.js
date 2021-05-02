@@ -36,12 +36,33 @@ router.post('/', async (req, res) => {
 router.put('/:id/like', async (req, res) => {
   const postId = req.params.id;
   // eslint-disable-next-line no-underscore-dangle
-  // const userId = req.session.user._id;
-
+  const userId = req.session.user._id;
   const isLikes = req.session.user.likes && req.session.user.likes.includes(postId);
-  console.log(`Is liked${isLikes}`);
+  const option = isLikes ? '$pull' : '$addToSet';
 
-  res.status(200).send('Yaho');
+  console.log(isLikes);
+  console.log(option);
+  console.log(userId);
+
+  req.session.user = await User.findByIdAndUpdate(
+    userId,
+    { [option]: { likes: postId } },
+    { new: true },
+  ).catch((err) => {
+    console.log(err);
+    res.sendStatus(400);
+  });
+
+  const post = await Post.findByIdAndUpdate(
+    postId,
+    { [option]: { likes: userId } },
+    { new: true },
+  ).catch((err) => {
+    console.log(err);
+    res.sendStatus(400);
+  });
+
+  res.status(200).send(post);
 });
 
 module.exports = router;
