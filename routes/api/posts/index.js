@@ -5,14 +5,17 @@ const User = require('../../../schemas/userSchema');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-  const data = await Post.find()
-    .populate('postedBy')
-    .populate('retweetData')
-    .sort({ createdAt: -1 })
-    .catch(() => {
-      res.sendStatus(400);
-    });
-  const result = await User.populate(data, { path: 'retweetData.postedBy' });
+  const result = await getPosts({});
+
+  return res.status(200).send(result);
+});
+
+router.get('/:id', async (req, res) => {
+  const postId = req.params.id;
+
+  const data = await getPosts({ _id: postId });
+  const result = data[0];
+
   return res.status(200).send(result);
 });
 
@@ -24,6 +27,10 @@ router.post('/', async (req, res) => {
     content: req.body.content,
     postedBy: req.session.user,
   };
+
+  if (req.body.replyTo) {
+    postData.replyTo = req.body.replyTo;
+  }
 
   const newPost = await Post.create(postData).catch(() => {
     res.sendStatus(400);
@@ -96,5 +103,20 @@ router.post('/:id/retweet', async (req, res) => {
 
   res.status(200).send(post);
 });
+
+async function getPosts(filter) {
+  const data = await Post.find(filter)
+    .populate('postedBy')
+    .populate('retweetData')
+    .populate('replyTo')
+    .sort({ createdAt: -1 })
+    .catch((err) => {
+      console.log(err);
+    });
+
+  const result = await User.populate(data, { path: 'replyTo.postedBy' });
+  // eslint-disable-next-line no-return-await
+  return await User.populate(result, { path: 'retweetData.postedBy' });
+}
 
 module.exports = router;

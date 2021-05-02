@@ -1,11 +1,13 @@
 // eslint-disable-next-line no-undef
-$('#postTextarea').keyup((event) => {
+$('#postTextarea, #replyTextarea').keyup((event) => {
   // eslint-disable-next-line no-undef
   const textBox = $(event.target);
   const value = textBox.val().trim();
 
+  const isModal = textBox.parents('.modal').length === 1;
+
   // eslint-disable-next-line no-undef
-  const submitButton = $('#submitPostButton');
+  const submitButton = isModal ? $('#submitReplyButton') : $('#submitPostButton');
 
   if (!value) {
     return submitButton.prop('disabled', true);
@@ -14,26 +16,59 @@ $('#postTextarea').keyup((event) => {
   return submitButton.prop('disabled', false);
 });
 
-// eslint-disable-next-line no-undef
-$('#submitPostButton').click((event) => {
+// eslint-disable-next-line no-undef,consistent-return
+$('#submitPostButton, #submitReplyButton ').click((event) => {
   // eslint-disable-next-line no-undef
   const button = $(event.target);
+
+  const isModal = button.parents('.modal').length === 1;
   // eslint-disable-next-line no-undef
-  const textBox = $('#postTextarea');
+  const textBox = isModal ? $('#replyTextarea') : $('#postTextarea');
 
   const data = {
     content: textBox.val(),
   };
 
+  if (isModal) {
+    const { id } = button.data();
+    if (!id) return alert('Button id is null');
+    data.replyTo = id;
+  }
+
   // eslint-disable-next-line no-undef
   $.post('api/posts', data, (postData) => {
-    const html = createPostHtml(postData);
-    // eslint-disable-next-line no-undef
-    $('.postsContainer').prepend(html);
-    textBox.val('');
-    button.prop('disabled', true);
+    if (postData.replyTo) {
+      // eslint-disable-next-line no-restricted-globals
+      location.reload();
+    } else {
+      const html = createPostHtml(postData);
+      // eslint-disable-next-line no-undef
+      $('.postsContainer').prepend(html);
+      textBox.val('');
+      button.prop('disabled', true);
+    }
   });
 });
+
+// eslint-disable-next-line no-undef
+$('#replyModal')
+  .on('show.bs.modal', (event) => {
+    // eslint-disable-next-line no-undef
+    const button = $(event.relatedTarget);
+    const postId = getPostIdFromElement(button);
+    // eslint-disable-next-line no-undef
+    $('#submitReplyButton').data('id', postId);
+
+    // eslint-disable-next-line no-undef
+    $.get(`api/posts/${postId}`, (results) => {
+      // eslint-disable-next-line no-undef
+      outputPosts(results, $('#originalPostContainer'));
+    });
+  })
+  .on('hidden.bs.modal', () => {
+    // eslint-disable-next-line no-undef
+    $('#originalPostContainer').html('');
+  });
 
 // eslint-disable-next-line no-undef
 $(document).on('click', '.likeButton', (event) => {
@@ -116,6 +151,21 @@ function createPostHtml(postData) {
     retweetText = `<span><i class='fas fa-retweet'></i> Retweeted by <a href='/profile/${retweetedBy}'>@${retweetedBy}</a></span>`;
   }
 
+  let replyFlag = '';
+  if (postData.replyTo) {
+    // eslint-disable-next-line no-underscore-dangle
+    if (!postData.replyTo._id) {
+      return alert('Reply to is not populated');
+      // eslint-disable-next-line no-underscore-dangle
+    }
+    if (!postData.replyTo.postedBy._id) {
+      return alert('Posted by is not populated');
+    }
+
+    const replyToUsername = postData.replyTo.postedBy.username;
+    replyFlag = `<div class='replyFlag'>Replying to <a href='/profile/${replyToUsername}'>@${replyToUsername}</a></div>`;
+  }
+
   // eslint-disable-next-line no-underscore-dangle
   return `<div class='post' data-id='${data._id}'>
             <div class='postActionContainer'>
@@ -127,18 +177,20 @@ function createPostHtml(postData) {
                 </div>
                 <div class='postContentContainer'>
                     <div class='header'>
-                        <a href='/profile/${
-                          postedBy.username
-                        }' class='displayName'>${displayName}</a>
+                        <a
+                        href='/profile/${postedBy.username}'
+                        class='displayName'>${displayName}
+                        </a>
                         <span class='username'>@${postedBy.username}</span>
                         <span class='date'>${timestamp}</span>
                     </div>
+                    ${replyFlag}
                     <div class='postBody'>
                         <span>${data.content}</span>
                     </div>
                     <div class='postFooter'>
                         <div class='postButtonContainer'>
-                            <button>
+                            <button data-toggle='modal' data-target='#replyModal'>
                                 <i class='far fa-comment'></i>
                             </button>
                         </div>
@@ -192,4 +244,25 @@ function timeDifference(current, previous) {
   }
 
   return `${Math.round(elapsed / msPerYear)} years ago`;
+}
+
+function outputPosts(results, container) {
+  container.html('');
+  let resultArray;
+
+  if (!Array.isArray(results)) {
+    resultArray = [results];
+  } else {
+    resultArray = results;
+  }
+
+  resultArray.forEach((result) => {
+    // eslint-disable-next-line no-undef
+    const html = createPostHtml(result);
+    container.append(html);
+  });
+
+  if (!resultArray.length) {
+    container.append("<span class='noResults'>Nothing to show.</span>");
+  }
 }
