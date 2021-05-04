@@ -120,6 +120,17 @@ $(document).on('click', '.retweetButton', (event) => {
   });
 });
 
+// eslint-disable-next-line no-undef
+$(document).on('click', '.post', (event) => {
+  // eslint-disable-next-line no-undef
+  const element = $(event.target);
+  const postId = getPostIdFromElement(element);
+
+  if (postId && !element.is('button')) {
+    window.location.href = `/posts/${postId}`;
+  }
+});
+
 function getPostIdFromElement(element) {
   const isRoot = element.hasClass('post');
   const rootElement = isRoot ? element : element.closest('.post');
@@ -158,6 +169,7 @@ function createPostHtml(postData) {
       return alert('Reply to is not populated');
       // eslint-disable-next-line no-underscore-dangle
     }
+    // eslint-disable-next-line no-underscore-dangle
     if (!postData.replyTo.postedBy._id) {
       return alert('Posted by is not populated');
     }

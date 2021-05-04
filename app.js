@@ -8,6 +8,7 @@ const loginRoute = require('./routes/loginRoutes');
 const registerRoute = require('./routes/registerRoutes');
 const logoutRoute = require('./routes/logoutRoutes');
 const postApiRoute = require('./routes/api/posts/index');
+const postPageApiRoute = require('./routes/api/postPages/index');
 
 const app = express();
 const PORT = 3000;
@@ -28,6 +29,7 @@ app.use(
 app.use('/login', loginRoute);
 app.use('/register', registerRoute);
 app.use('/logout', logoutRoute);
+app.use('/posts', postPageApiRoute);
 app.use('/api/posts', postApiRoute);
 
 app.get('/', requireLogin, (req, res) => {
