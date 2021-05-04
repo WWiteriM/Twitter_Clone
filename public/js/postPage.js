@@ -3,6 +3,6 @@ $(document).ready(() => {
   // eslint-disable-next-line no-undef
   $.get(`/api/posts/${postId}`, (results) => {
     // eslint-disable-next-line no-undef
-    outputPosts(results, $('.postsContainer'));
+    outputPostsWithReplies(results, $('.postsContainer'));
   });
 });

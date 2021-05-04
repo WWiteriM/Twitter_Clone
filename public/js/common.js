@@ -62,7 +62,7 @@ $('#replyModal')
     // eslint-disable-next-line no-undef
     $.get(`api/posts/${postId}`, (results) => {
       // eslint-disable-next-line no-undef
-      outputPosts(results, $('#originalPostContainer'));
+      outputPosts(results.postData, $('#originalPostContainer'));
     });
   })
   .on('hidden.bs.modal', () => {
@@ -142,7 +142,7 @@ function getPostIdFromElement(element) {
   return postId;
 }
 
-function createPostHtml(postData) {
+function createPostHtml(postData, largeFont = false) {
   const isRetweet = postData.retweetData !== undefined;
   const retweetedBy = isRetweet ? postData.postedBy.username : null;
   const data = isRetweet ? postData.retweetData : postData;
@@ -156,6 +156,7 @@ function createPostHtml(postData) {
   const likeButtonActiveClass = data.likes.includes(userLoggedIn._id) ? 'active' : '';
   // eslint-disable-next-line no-underscore-dangle,no-undef
   const retweetButtonActiveClass = data.retweetUsers.includes(userLoggedIn._id) ? 'active' : '';
+  const largeFontClass = largeFont ? 'largeFont' : '';
 
   let retweetText = '';
   if (isRetweet) {
@@ -163,7 +164,8 @@ function createPostHtml(postData) {
   }
 
   let replyFlag = '';
-  if (postData.replyTo) {
+  // eslint-disable-next-line no-underscore-dangle
+  if (postData.replyTo && postData.replyTo._id) {
     // eslint-disable-next-line no-underscore-dangle
     if (!postData.replyTo._id) {
       return alert('Reply to is not populated');
@@ -179,7 +181,7 @@ function createPostHtml(postData) {
   }
 
   // eslint-disable-next-line no-underscore-dangle
-  return `<div class='post' data-id='${data._id}'>
+  return `<div class='post ${largeFontClass}' data-id='${data._id}'>
             <div class='postActionContainer'>
                 ${retweetText}
             </div>
@@ -277,4 +279,24 @@ function outputPosts(results, container) {
   if (!resultArray.length) {
     container.append("<span class='noResults'>Nothing to show.</span>");
   }
+}
+
+// eslint-disable-next-line no-unused-vars
+function outputPostsWithReplies(results, container) {
+  container.html('');
+
+  // eslint-disable-next-line no-underscore-dangle
+  if (results.replyTo && results.replyTo._id) {
+    const html = createPostHtml(results.replyTo);
+    container.append(html);
+  }
+
+  const mainPostHtml = createPostHtml(results.postData, true);
+  container.append(mainPostHtml);
+
+  results.replies.forEach((result) => {
+    // eslint-disable-next-line no-undef
+    const html = createPostHtml(result);
+    container.append(html);
+  });
 }

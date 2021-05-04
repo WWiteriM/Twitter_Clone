@@ -13,10 +13,21 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   const postId = req.params.id;
 
-  const data = await getPosts({ _id: postId });
-  const result = data[0];
+  let postData = await getPosts({ _id: postId });
+  // eslint-disable-next-line prefer-destructuring
+  postData = postData[0];
 
-  return res.status(200).send(result);
+  const results = {
+    postData,
+  };
+
+  if (postData.replyTo) {
+    results.replyTo = postData.replyTo;
+  }
+
+  results.replies = await getPosts({ replyTo: postId });
+
+  res.status(200).send(results);
 });
 
 router.post('/', async (req, res) => {
@@ -105,7 +116,7 @@ router.post('/:id/retweet', async (req, res) => {
 });
 
 async function getPosts(filter) {
-  const data = await Post.find(filter)
+  let result = await Post.find(filter)
     .populate('postedBy')
     .populate('retweetData')
     .populate('replyTo')
@@ -114,7 +125,7 @@ async function getPosts(filter) {
       console.log(err);
     });
 
-  const result = await User.populate(data, { path: 'replyTo.postedBy' });
+  result = await User.populate(result, { path: 'replyTo.postedBy' });
   // eslint-disable-next-line no-return-await
   return await User.populate(result, { path: 'retweetData.postedBy' });
 }
