@@ -76,6 +76,10 @@ button span {
     font-size: 25px;
 }
 
+.wrapper > .row {
+    margin: 0;
+}
+
 .mainSectionContainer {
     padding: 0;
     border-left: 1px solid var(--lightGrey);
@@ -175,7 +179,12 @@ button span {
 }
 
 .displayName {
-    font-weight: 800;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.displayName:hover {
+    text-decoration: underline;
 }
 
 .postFooter {
@@ -370,4 +379,20 @@ button span {
 .tab:hover {
     color: var(--blue);
     background-color: var(--blueBackground);
+}
+
+.resultsContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.resultsContainer .user {
+    padding: var(--spacing);
+    display: flex;
+    border-bottom: 1px solid var(--lightGrey);
+}
+
+.user .userDetailsContainer {
+    flex: 1;
+    padding: 0 var(--spacing);
 }
