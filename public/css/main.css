@@ -243,3 +243,11 @@ button span {
 .post.largeFont:hover {
     background-color: var(--lightGrey);
 }
+
+.postContentContainer .header {
+    display: flex;
+}
+
+.postContentContainer .header .date {
+    flex: 1
+}

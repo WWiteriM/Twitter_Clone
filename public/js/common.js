@@ -1,12 +1,9 @@
-// eslint-disable-next-line no-undef
 $('#postTextarea, #replyTextarea').keyup((event) => {
-  // eslint-disable-next-line no-undef
   const textBox = $(event.target);
   const value = textBox.val().trim();
 
   const isModal = textBox.parents('.modal').length === 1;
 
-  // eslint-disable-next-line no-undef
   const submitButton = isModal ? $('#submitReplyButton') : $('#submitPostButton');
 
   if (!value) {
@@ -16,13 +13,11 @@ $('#postTextarea, #replyTextarea').keyup((event) => {
   return submitButton.prop('disabled', false);
 });
 
-// eslint-disable-next-line no-undef,consistent-return
+// eslint-disable-next-line consistent-return
 $('#submitPostButton, #submitReplyButton ').click((event) => {
-  // eslint-disable-next-line no-undef
   const button = $(event.target);
 
   const isModal = button.parents('.modal').length === 1;
-  // eslint-disable-next-line no-undef
   const textBox = isModal ? $('#replyTextarea') : $('#postTextarea');
 
   const data = {
@@ -35,14 +30,12 @@ $('#submitPostButton, #submitReplyButton ').click((event) => {
     data.replyTo = id;
   }
 
-  // eslint-disable-next-line no-undef
   $.post('api/posts', data, (postData) => {
     if (postData.replyTo) {
       // eslint-disable-next-line no-restricted-globals
       location.reload();
     } else {
       const html = createPostHtml(postData);
-      // eslint-disable-next-line no-undef
       $('.postsContainer').prepend(html);
       textBox.val('');
       button.prop('disabled', true);
@@ -50,42 +43,55 @@ $('#submitPostButton, #submitReplyButton ').click((event) => {
   });
 });
 
-// eslint-disable-next-line no-undef
 $('#replyModal')
   .on('show.bs.modal', (event) => {
-    // eslint-disable-next-line no-undef
     const button = $(event.relatedTarget);
     const postId = getPostIdFromElement(button);
-    // eslint-disable-next-line no-undef
     $('#submitReplyButton').data('id', postId);
 
-    // eslint-disable-next-line no-undef
     $.get(`api/posts/${postId}`, (results) => {
-      // eslint-disable-next-line no-undef
       outputPosts(results.postData, $('#originalPostContainer'));
     });
   })
   .on('hidden.bs.modal', () => {
-    // eslint-disable-next-line no-undef
     $('#originalPostContainer').html('');
   });
 
-// eslint-disable-next-line no-undef
+$('#deletePostModal').on('show.bs.modal', (event) => {
+  const button = $(event.relatedTarget);
+  const postId = getPostIdFromElement(button);
+  $('#deletePostButton').data('id', postId);
+});
+
+$('#deletePostButton').click((event) => {
+  const postId = $(event.target).data('id');
+
+  $.ajax({
+    url: `/api/posts/${postId}`,
+    type: 'DELETE',
+    success: (data, status, xhr) => {
+      if (xhr.status !== 202) {
+        alert('Could not delete the post');
+        return;
+      }
+      // eslint-disable-next-line no-restricted-globals
+      location.reload();
+    },
+  });
+});
+
 $(document).on('click', '.likeButton', (event) => {
-  // eslint-disable-next-line no-undef
   const button = $(event.target);
   const postId = getPostIdFromElement(button);
 
   if (!postId) return;
 
-  // eslint-disable-next-line no-undef
   $.ajax({
     url: `/api/posts/${postId}/like`,
     type: 'PUT',
     success: (postData) => {
       button.find('span').text(postData.likes.length || '');
 
-      // eslint-disable-next-line no-underscore-dangle,no-undef
       if (postData.likes.includes(userLoggedIn._id)) {
         button.addClass('active');
       } else {
@@ -95,22 +101,18 @@ $(document).on('click', '.likeButton', (event) => {
   });
 });
 
-// eslint-disable-next-line no-undef
 $(document).on('click', '.retweetButton', (event) => {
-  // eslint-disable-next-line no-undef
   const button = $(event.target);
   const postId = getPostIdFromElement(button);
 
   if (!postId) return;
 
-  // eslint-disable-next-line no-undef
   $.ajax({
     url: `/api/posts/${postId}/retweet`,
     type: 'POST',
     success: (postData) => {
       button.find('span').text(postData.retweetUsers.length || '');
 
-      // eslint-disable-next-line no-underscore-dangle,no-undef
       if (postData.retweetUsers.includes(userLoggedIn._id)) {
         button.addClass('active');
       } else {
@@ -120,9 +122,7 @@ $(document).on('click', '.retweetButton', (event) => {
   });
 });
 
-// eslint-disable-next-line no-undef
 $(document).on('click', '.post', (event) => {
-  // eslint-disable-next-line no-undef
   const element = $(event.target);
   const postId = getPostIdFromElement(element);
 
@@ -152,9 +152,7 @@ function createPostHtml(postData, largeFont = false) {
   const displayName = `${postedBy.firstName} ${postedBy.lastName}`;
   const timestamp = timeDifference(new Date(), new Date(data.createdAt));
 
-  // eslint-disable-next-line no-undef,no-underscore-dangle
   const likeButtonActiveClass = data.likes.includes(userLoggedIn._id) ? 'active' : '';
-  // eslint-disable-next-line no-underscore-dangle,no-undef
   const retweetButtonActiveClass = data.retweetUsers.includes(userLoggedIn._id) ? 'active' : '';
   const largeFontClass = largeFont ? 'largeFont' : '';
 
@@ -164,14 +162,10 @@ function createPostHtml(postData, largeFont = false) {
   }
 
   let replyFlag = '';
-  // eslint-disable-next-line no-underscore-dangle
   if (postData.replyTo && postData.replyTo._id) {
-    // eslint-disable-next-line no-underscore-dangle
     if (!postData.replyTo._id) {
       return alert('Reply to is not populated');
-      // eslint-disable-next-line no-underscore-dangle
     }
-    // eslint-disable-next-line no-underscore-dangle
     if (!postData.replyTo.postedBy._id) {
       return alert('Posted by is not populated');
     }
@@ -180,7 +174,11 @@ function createPostHtml(postData, largeFont = false) {
     replyFlag = `<div class='replyFlag'>Replying to <a href='/profile/${replyToUsername}'>@${replyToUsername}</a></div>`;
   }
 
-  // eslint-disable-next-line no-underscore-dangle
+  let buttons = '';
+  if (postData.postedBy._id === userLoggedIn._id) {
+    buttons = `<button data-id='${postData._id}' data-toggle='modal' data-target='#deletePostModal'><i class='fas fa-times'></i></button>`;
+  }
+
   return `<div class='post ${largeFontClass}' data-id='${data._id}'>
             <div class='postActionContainer'>
                 ${retweetText}
@@ -197,6 +195,7 @@ function createPostHtml(postData, largeFont = false) {
                         </a>
                         <span class='username'>@${postedBy.username}</span>
                         <span class='date'>${timestamp}</span>
+                        ${buttons}
                     </div>
                     ${replyFlag}
                     <div class='postBody'>
@@ -271,7 +270,6 @@ function outputPosts(results, container) {
   }
 
   resultArray.forEach((result) => {
-    // eslint-disable-next-line no-undef
     const html = createPostHtml(result);
     container.append(html);
   });
@@ -285,7 +283,6 @@ function outputPosts(results, container) {
 function outputPostsWithReplies(results, container) {
   container.html('');
 
-  // eslint-disable-next-line no-underscore-dangle
   if (results.replyTo && results.replyTo._id) {
     const html = createPostHtml(results.replyTo);
     container.append(html);
@@ -295,7 +292,6 @@ function outputPostsWithReplies(results, container) {
   container.append(mainPostHtml);
 
   results.replies.forEach((result) => {
-    // eslint-disable-next-line no-undef
     const html = createPostHtml(result);
     container.append(html);
   });

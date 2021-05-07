@@ -50,9 +50,45 @@ router.post('/', async (req, res) => {
   return res.status(201).send(post);
 });
 
+router.post('/:id/retweet', async (req, res) => {
+  const postId = req.params.id;
+  const userId = req.session.user._id;
+
+  const deletedPost = await Post.findOneAndDelete({ postedBy: userId, retweetData: postId }).catch(
+    () => {
+      res.sendStatus(400);
+    },
+  );
+
+  const option = deletedPost ? '$pull' : '$addToSet';
+  let repost = deletedPost;
+
+  if (!repost) {
+    repost = await Post.create({ postedBy: userId, retweetData: postId }).catch(() => {
+      res.sendStatus(400);
+    });
+  }
+  req.session.user = await User.findByIdAndUpdate(
+    userId,
+    { [option]: { retweets: repost._id } },
+    { new: true },
+  ).catch(() => {
+    res.sendStatus(400);
+  });
+
+  const post = await Post.findByIdAndUpdate(
+    postId,
+    { [option]: { retweetUsers: userId } },
+    { new: true },
+  ).catch(() => {
+    res.sendStatus(400);
+  });
+
+  res.status(200).send(post);
+});
+
 router.put('/:id/like', async (req, res) => {
   const postId = req.params.id;
-  // eslint-disable-next-line no-underscore-dangle
   const userId = req.session.user._id;
   const isLikes = req.session.user.likes && req.session.user.likes.includes(postId);
   const option = isLikes ? '$pull' : '$addToSet';
@@ -76,43 +112,12 @@ router.put('/:id/like', async (req, res) => {
   res.status(200).send(post);
 });
 
-router.post('/:id/retweet', async (req, res) => {
-  const postId = req.params.id;
-  // eslint-disable-next-line no-underscore-dangle
-  const userId = req.session.user._id;
-
-  const deletedPost = await Post.findOneAndDelete({ postedBy: userId, retweetData: postId }).catch(
-    () => {
-      res.sendStatus(400);
-    },
-  );
-
-  const option = deletedPost ? '$pull' : '$addToSet';
-  let repost = deletedPost;
-
-  if (!repost) {
-    repost = await Post.create({ postedBy: userId, retweetData: postId }).catch(() => {
-      res.sendStatus(400);
-    });
+router.delete('/:id', async (req, res) => {
+  const deletedPost = await Post.findByIdAndDelete(req.params.id);
+  if (!deletedPost) {
+    res.sendStatus(400);
   }
-  req.session.user = await User.findByIdAndUpdate(
-    userId,
-    // eslint-disable-next-line no-underscore-dangle
-    { [option]: { retweets: repost._id } },
-    { new: true },
-  ).catch(() => {
-    res.sendStatus(400);
-  });
-
-  const post = await Post.findByIdAndUpdate(
-    postId,
-    { [option]: { retweetUsers: userId } },
-    { new: true },
-  ).catch(() => {
-    res.sendStatus(400);
-  });
-
-  res.status(200).send(post);
+  res.sendStatus(202);
 });
 
 async function getPosts(filter) {
