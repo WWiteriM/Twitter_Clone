@@ -7,8 +7,9 @@ const { requireLogin } = require('./middleware');
 const loginRoute = require('./routes/loginRoutes');
 const registerRoute = require('./routes/registerRoutes');
 const logoutRoute = require('./routes/logoutRoutes');
+const postPageRoute = require('./routes/api/postPages/index');
+const profileRoute = require('./routes/api/profile/index');
 const postApiRoute = require('./routes/api/posts/index');
-const postPageApiRoute = require('./routes/api/postPages/index');
 
 const app = express();
 const PORT = 3000;
@@ -29,7 +30,8 @@ app.use(
 app.use('/login', loginRoute);
 app.use('/register', registerRoute);
 app.use('/logout', logoutRoute);
-app.use('/posts', requireLogin, postPageApiRoute);
+app.use('/posts', requireLogin, postPageRoute);
+app.use('/profile', requireLogin, profileRoute);
 app.use('/api/posts', postApiRoute);
 
 app.get('/', requireLogin, (req, res) => {

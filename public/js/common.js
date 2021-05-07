@@ -148,7 +148,6 @@ function createPostHtml(postData, largeFont = false) {
   const data = isRetweet ? postData.retweetData : postData;
 
   const { postedBy } = data;
-
   const displayName = `${postedBy.firstName} ${postedBy.lastName}`;
   const timestamp = timeDifference(new Date(), new Date(data.createdAt));
 
@@ -275,7 +274,7 @@ function outputPosts(results, container) {
   });
 
   if (!resultArray.length) {
-    container.append("<span class='noResults'>Nothing to show.</span>");
+    container.append("<span class='noResults'>You have nothing to show.</span>");
   }
 }
 

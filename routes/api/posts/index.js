@@ -5,8 +5,15 @@ const User = require('../../../schemas/userSchema');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-  const result = await getPosts({});
+  const searchObj = req.query;
 
+  if (searchObj.isReply) {
+    const isReply = searchObj.isReply === 'true';
+    searchObj.replyTo = { $exists: isReply };
+    delete searchObj.isReply;
+  }
+
+  const result = await getPosts(searchObj);
   return res.status(200).send(result);
 });
 
