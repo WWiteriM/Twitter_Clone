@@ -29,7 +29,7 @@ block content
                             i.fas.fa-camera
 
             .profileButtonsContainer
-                if profileUser._id !== userLoggedIn._id
+                if userLoggedIn._id.toString() !== profileUser._id.toString()
 
                     a.profileButton(href=`/messages/${profileUser._id}`)
                         i.fas.fa-envelope
