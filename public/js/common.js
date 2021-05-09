@@ -1,3 +1,5 @@
+let cropper;
+
 $('#postTextarea, #replyTextarea').keyup((event) => {
   const textBox = $(event.target);
   const value = textBox.val().trim();
@@ -77,6 +79,50 @@ $('#deletePostButton').click((event) => {
       // eslint-disable-next-line no-restricted-globals
       location.reload();
     },
+  });
+});
+
+$('#filePhoto').change(function () {
+  if (this.files && this.files[0]) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const image = document.getElementById('imagePreview');
+      image.src = e.target.result;
+
+      if (cropper) {
+        cropper.destroy();
+      }
+      cropper = new Cropper(image, {
+        aspectRatio: 1 / 1,
+        background: false,
+      });
+    };
+    reader.readAsDataURL(this.files[0]);
+  } else {
+    console.log('nope');
+  }
+});
+
+$('#imageUploadButton').click(() => {
+  const canvas = cropper.getCroppedCanvas();
+
+  if (!canvas) {
+    alert('Could not upload image. Make sure it is an image file.');
+    return;
+  }
+  canvas.toBlob((blob) => {
+    const formData = new FormData();
+    formData.append('croppedImage', blob);
+
+    $.ajax({
+      url: '/api/users/profilePicture',
+      type: 'POST',
+      data: formData,
+      processData: false,
+      contentType: false,
+      // eslint-disable-next-line no-restricted-globals
+      success: () => location.reload(),
+    });
   });
 });
 

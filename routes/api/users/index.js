@@ -1,4 +1,9 @@
 const express = require('express');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+const upload = multer({ dest: 'uploads/' });
 const User = require('../../../schemas/userSchema');
 
 const router = express.Router();
@@ -19,6 +24,28 @@ router.get('/:userId/followers', async (req, res) => {
       res.sendStatus(400);
     });
   res.status(200).send(result);
+});
+
+router.post('/profilePicture', upload.single('croppedImage'), (req, res) => {
+  if (!req.file) {
+    console.log('No file uploaded');
+    return res.sendStatus(400);
+  }
+
+  const filePath = `/uploads/images/${req.file.filename}.png`;
+  const tempPath = req.file.path;
+  const targetPath = path.join(__dirname, `../../../${filePath}`);
+  fs.rename(tempPath, targetPath, async (error) => {
+    if (error) {
+      return res.sendStatus(400);
+    }
+    req.session.user = await User.findByIdAndUpdate(
+      req.session.user._id,
+      { profilePic: filePath },
+      { new: true },
+    );
+    res.sendStatus(204);
+  });
 });
 
 router.put('/:userId/follow', async (req, res) => {
