@@ -8,6 +8,25 @@ const User = require('../../../schemas/userSchema');
 
 const router = express.Router();
 
+router.get('/', async (req, res) => {
+  let searchObj = req.query;
+
+  if (req.query.search) {
+    searchObj = {
+      $or: [
+        { firstName: { $regex: req.query.search, $options: 'i' } },
+        { lastName: { $regex: req.query.search, $options: 'i' } },
+        { username: { $regex: req.query.search, $options: 'i' } },
+      ],
+    };
+  }
+
+  const result = await User.find(searchObj).catch(() => {
+    res.sendStatus(400);
+  });
+  res.status(200).send(result);
+});
+
 router.get('/:userId/following', async (req, res) => {
   const result = await User.findById(req.params.userId)
     .populate('following')

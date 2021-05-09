@@ -13,6 +13,11 @@ router.get('/', async (req, res) => {
     delete searchObj.isReply;
   }
 
+  if (searchObj.search) {
+    searchObj.content = { $regex: searchObj.search, $options: 'i' };
+    delete searchObj.search;
+  }
+
   if (searchObj.followingOnly) {
     const followingOnly = searchObj.followingOnly === 'true';
 
