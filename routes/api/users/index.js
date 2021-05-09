@@ -48,6 +48,28 @@ router.post('/profilePicture', upload.single('croppedImage'), (req, res) => {
   });
 });
 
+router.post('/coverPhoto', upload.single('croppedImage'), (req, res) => {
+  if (!req.file) {
+    console.log('No file uploaded');
+    return res.sendStatus(400);
+  }
+
+  const filePath = `/uploads/images/${req.file.filename}.png`;
+  const tempPath = req.file.path;
+  const targetPath = path.join(__dirname, `../../../${filePath}`);
+  fs.rename(tempPath, targetPath, async (error) => {
+    if (error) {
+      return res.sendStatus(400);
+    }
+    req.session.user = await User.findByIdAndUpdate(
+      req.session.user._id,
+      { coverPhoto: filePath },
+      { new: true },
+    );
+    res.sendStatus(204);
+  });
+});
+
 router.put('/:userId/follow', async (req, res) => {
   const { userId } = req.params;
   const user = await User.findById(userId);
