@@ -47,7 +47,6 @@ router.get('/:userId/followers', async (req, res) => {
 
 router.post('/profilePicture', upload.single('croppedImage'), (req, res) => {
   if (!req.file) {
-    console.log('No file uploaded');
     return res.sendStatus(400);
   }
 
@@ -69,7 +68,6 @@ router.post('/profilePicture', upload.single('croppedImage'), (req, res) => {
 
 router.post('/coverPhoto', upload.single('croppedImage'), (req, res) => {
   if (!req.file) {
-    console.log('No file uploaded');
     return res.sendStatus(400);
   }
 
