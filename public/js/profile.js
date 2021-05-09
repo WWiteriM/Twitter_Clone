@@ -7,6 +7,10 @@ $(document).ready(() => {
 });
 
 function loadPosts() {
+  $.get('/api/posts', { postedBy: profileUserId, pinned: true }, (results) => {
+    outputPinnedPost(results, $('.pinnedPostContainer'));
+  });
+
   $.get('/api/posts', { postedBy: profileUserId, isReply: false }, (results) => {
     outputPosts(results, $('.postsContainer'));
   });
@@ -15,5 +19,18 @@ function loadPosts() {
 function loadReplies() {
   $.get('/api/posts', { postedBy: profileUserId, isReply: true }, (results) => {
     outputPosts(results, $('.postsContainer'));
+  });
+}
+
+function outputPinnedPost(results, container) {
+  if (!results.length) {
+    container.hide();
+    return;
+  }
+  container.html('');
+
+  results.forEach((result) => {
+    const html = createPostHtml(result);
+    container.append(html);
   });
 }

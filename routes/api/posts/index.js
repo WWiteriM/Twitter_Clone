@@ -138,6 +138,19 @@ router.put('/:id/like', async (req, res) => {
   res.status(200).send(post);
 });
 
+router.put('/:id', async (req, res) => {
+  if (req.body.pinned) {
+    await Post.updateMany({ postedBy: req.session.user }, { pinned: false }).catch(() => {
+      res.sendStatus(400);
+    });
+  }
+  const pinnedPost = await Post.findByIdAndUpdate(req.params.id, req.body);
+  if (!pinnedPost) {
+    res.sendStatus(400);
+  }
+  res.sendStatus(204);
+});
+
 router.delete('/:id', async (req, res) => {
   const deletedPost = await Post.findByIdAndDelete(req.params.id);
   if (!deletedPost) {

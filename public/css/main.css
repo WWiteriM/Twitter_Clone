@@ -438,3 +438,15 @@ button span {
     padding: 0 var(--spacing) var(--spacing) 0;
 }
 
+.pinButton.active {
+    color: var(--blue);
+}
+
+.pinnedPostText {
+    font-size: 16px;
+    color: var(--greyText);
+}
+
+.pinnedPostContainer {
+    border-bottom: 10px solid var(--lightGrey);
+}
