@@ -159,6 +159,7 @@ button span {
     cursor: pointer;
     border-bottom: 1px solid var(--lightGrey);
     flex-shrink: 0;
+    word-wrap: break-word;
 }
 
 .mainContentContainer {
