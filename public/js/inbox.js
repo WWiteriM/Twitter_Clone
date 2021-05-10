@@ -24,7 +24,7 @@ function createChatHtml(chatData) {
   const latestMessage = 'message';
   const image = getChatImageElement(chatData);
 
-  return `<a href='/message/${chatData._id}' class='resultListItem'>
+  return `<a href='/messages/${chatData._id}' class='resultListItem'>
             ${image}
             <div class='resultsDetailsContainer ellipsis'>
                 <span class='heading ellipsis'>${chatName}</span>
