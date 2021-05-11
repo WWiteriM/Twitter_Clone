@@ -33,23 +33,6 @@ function createChatHtml(chatData) {
           </a>`;
 }
 
-function getChatName(chatData) {
-  let { chatName } = chatData;
-
-  if (!chatName) {
-    const otherChatUsers = getOtherChatUsers(chatData.users);
-    const nameArray = otherChatUsers.map((user) => `${user.firstName} ${user.lastName}`);
-    chatName = nameArray.join(', ');
-  }
-  return chatName;
-}
-
-function getOtherChatUsers(users) {
-  if (users.length === 1) return users;
-
-  return users.filter((user) => user._id !== userLoggedIn._id);
-}
-
 function getChatImageElement(chatData) {
   const otherChatUsers = getOtherChatUsers(chatData.users);
   let chatImage = getUserChatImageElement(otherChatUsers[0]);

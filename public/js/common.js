@@ -601,3 +601,21 @@ function updateSelectedUsersHtml() {
   $('.selectedUser').remove();
   $('#selectedUsers').prepend(elements);
 }
+
+// eslint-disable-next-line no-unused-vars
+function getChatName(chatData) {
+  let { chatName } = chatData;
+
+  if (!chatName) {
+    const otherChatUsers = getOtherChatUsers(chatData.users);
+    const nameArray = otherChatUsers.map((user) => `${user.firstName} ${user.lastName}`);
+    chatName = nameArray.join(', ');
+  }
+  return chatName;
+}
+
+function getOtherChatUsers(users) {
+  if (users.length === 1) return users;
+
+  return users.filter((user) => user._id !== userLoggedIn._id);
+}
