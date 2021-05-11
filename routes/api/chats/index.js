@@ -1,15 +1,18 @@
 const express = require('express');
 const Chat = require('../../../schemas/chatSchema');
+const User = require('../../../schemas/userSchema');
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-  const results = await Chat.find({ users: { $elemMatch: { $eq: req.session.user._id } } })
+  const data = await Chat.find({ users: { $elemMatch: { $eq: req.session.user._id } } })
     .populate('users')
+    .populate('latestMessage')
     .sort({ updatedAt: -1 })
     .catch(() => {
       res.sendStatus(400);
     });
+  const results = await User.populate(data, { path: 'latestMessage.sender' });
   res.status(200).send(results);
 });
 

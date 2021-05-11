@@ -42,7 +42,33 @@ function messageSubmitted() {
 }
 
 function sendMessage(content) {
-  $.post('/messages', { content, chatId }, (data) => {
-    console.log(data);
+  $.post('/messages', { content, chatId }, (data, status, xhr) => {
+    if (xhr.status !== 201) {
+      alert('Could not send message');
+      $('.inputTextBox').val(content);
+      return;
+    }
+
+    addChatMessageHtml(data);
   });
+}
+
+function addChatMessageHtml(message) {
+  if (!message || !message._id) {
+    alert('Message is not valid');
+    return;
+  }
+  const messageDiv = createMessageHtml(message);
+  $('.chatMessages').append(messageDiv);
+}
+
+function createMessageHtml(message) {
+  const isMine = message.sender._id === userLoggedIn._id;
+  const liClassName = isMine ? 'mine' : 'theirs';
+
+  return `<li class='message ${liClassName}'>
+            <div class='messageContainer'>
+                <span class='messageBody'>${message.content}</span>
+            </div>
+          </li>`;
 }

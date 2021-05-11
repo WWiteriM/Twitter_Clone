@@ -69,10 +69,16 @@ router.post('/', async (req, res) => {
     chat: req.body.chatId,
   };
 
-  const result = await Message.create(newMessage).catch(() => {
+  let messageData = await Message.create(newMessage).catch(() => {
     res.sendStatus(400);
   });
-  res.status(201).send(result);
+  messageData = await messageData.populate('sender').execPopulate();
+  messageData = await messageData.populate('chat').execPopulate();
+  await Chat.findByIdAndUpdate(req.body.chatId, { latestMessage: messageData }).catch(() => {
+    res.sendStatus(400);
+  });
+
+  res.status(201).send(messageData);
 });
 
 async function getChatByUserId(userLoggedIn, otherUserId) {
