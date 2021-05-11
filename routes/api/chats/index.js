@@ -1,6 +1,7 @@
 const express = require('express');
 const Chat = require('../../../schemas/chatSchema');
 const User = require('../../../schemas/userSchema');
+const Message = require('../../../schemas/messageSchema');
 
 const router = express.Router();
 
@@ -22,6 +23,17 @@ router.get('/:chatId', async (req, res) => {
     users: { $elemMatch: { $eq: req.session.user._id } },
   })
     .populate('users')
+    .catch(() => {
+      res.sendStatus(400);
+    });
+  res.status(200).send(results);
+});
+
+router.get('/:chatId/messages', async (req, res) => {
+  const results = await Message.find({
+    chat: req.params.chatId,
+  })
+    .populate('sender')
     .catch(() => {
       res.sendStatus(400);
     });

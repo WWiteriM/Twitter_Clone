@@ -3,6 +3,8 @@ $(document).ready(() => {
     if (xhr.status === 400) {
       alert('Could not get chat list');
     } else {
+      $('.loadingSpinnerContainer').remove();
+      $('.resultsContainer').css('visibility', 'visible');
       outputChatList(data, $('.resultsContainer'));
     }
   });
@@ -21,7 +23,6 @@ function outputChatList(chatList, container) {
 
 function createChatHtml(chatData) {
   const chatName = getChatName(chatData);
-  console.log(chatData);
   const latestMessage = getLatestMessage(chatData.latestMessage[0]);
   const image = getChatImageElement(chatData);
 

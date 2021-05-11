@@ -3,7 +3,10 @@ extends layouts/main-layout
 block content
     script.
         const postId = '!{postId}'
-    .postsContainer
+
+    .loadingSpinnerContainer
+        img(src='/images/LoadingSpinner.gif', alt='Loading spinner')
+    .postsContainer(style='visibility: hidden')
 
     +createPostModels(userLoggedIn)
 

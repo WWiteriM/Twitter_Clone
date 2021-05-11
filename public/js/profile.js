@@ -12,12 +12,16 @@ function loadPosts() {
   });
 
   $.get('/api/posts', { postedBy: profileUserId, isReply: false }, (results) => {
+    $('.loadingSpinnerContainer').remove();
+    $('.postsContainer').css('visibility', 'visible');
     outputPosts(results, $('.postsContainer'));
   });
 }
 
 function loadReplies() {
   $.get('/api/posts', { postedBy: profileUserId, isReply: true }, (results) => {
+    $('.loadingSpinnerContainer').remove();
+    $('.postsContainer').css('visibility', 'visible');
     outputPosts(results, $('.postsContainer'));
   });
 }

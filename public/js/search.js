@@ -1,14 +1,18 @@
-$('#searchBox').keydown((event) => {
+$('#searchBox').keydown(async (event) => {
   clearTimeout(timer);
+  $('.resultsContainer').html('');
   const textBox = $(event.target);
   const searchType = textBox.data().search;
   let value = textBox.val();
 
-  timer = setTimeout(() => {
+  await $('.loadingSpinnerContainer').css('display', 'flex');
+
+  timer = await setTimeout(() => {
     value = textBox.val().trim();
 
     if (!value) {
       $('.resultsContainer').html('');
+      $('.loadingSpinnerContainer').css('display', 'none');
     } else {
       search(value, searchType);
     }
@@ -20,8 +24,12 @@ function search(searchTerm, searchType) {
 
   $.get(url, { search: searchTerm }, (results) => {
     if (searchType === 'users') {
+      $('.loadingSpinnerContainer').css('display', 'none');
+      $('.resultsContainer').css('visibility', 'visible');
       outputUsers(results, $('.resultsContainer'));
     } else {
+      $('.loadingSpinnerContainer').css('display', 'none');
+      $('.resultsContainer').css('visibility', 'visible');
       outputPosts(results, $('.resultsContainer'));
     }
   });

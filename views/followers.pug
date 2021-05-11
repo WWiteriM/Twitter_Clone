@@ -12,7 +12,9 @@ block content
             +createTab('Following', `/profile/${profileUser.username}/following`, selectedTab != 'followers')
             +createTab('Followers', `/profile/${profileUser.username}/followers`, selectedTab == 'followers')
 
-        .resultsContainer
+        .loadingSpinnerContainer
+            img(src='/images/LoadingSpinner.gif', alt='Loading spinner')
+        .resultsContainer(style='visibility: hidden')
 
 block scripts
     script(src='/js/followers.js')

@@ -10,7 +10,9 @@ block content
         +createTab('Posts', `/search/posts`, selectedTab != 'users')
         +createTab('Users', `/search/users`, selectedTab == 'users')
 
-    .resultsContainer
+    .loadingSpinnerContainer(style='display: none')
+        img(src='/images/LoadingSpinner.gif', alt='Loading spinner')
+    .resultsContainer(style='visibility: hidden')
 
     +createPostModels(userLoggedIn)
 
