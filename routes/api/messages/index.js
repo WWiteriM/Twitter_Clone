@@ -39,7 +39,7 @@ router.get('/:chatId', async (req, res) => {
   }
 
   let chat = await Chat.findOne({ _id: chatId, users: { $elemMatch: { $eq: userId } } }).populate(
-    'userId',
+    'users',
   );
 
   if (!chat) {
