@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const Chat = require('../../../schemas/chatSchema');
 const User = require('../../../schemas/userSchema');
+const Message = require('../../../schemas/messageSchema');
 
 const router = express.Router();
 
@@ -55,6 +56,23 @@ router.get('/:chatId', async (req, res) => {
   }
 
   res.status(200).render('chatPage', payload);
+});
+
+router.post('/', async (req, res) => {
+  if (!req.body.content || !req.body.chatId) {
+    return res.sendStatus(400);
+  }
+
+  const newMessage = {
+    sender: req.session.user._id,
+    content: req.body.content,
+    chat: req.body.chatId,
+  };
+
+  const result = await Message.create(newMessage).catch(() => {
+    res.sendStatus(400);
+  });
+  res.status(201).send(result);
 });
 
 async function getChatByUserId(userLoggedIn, otherUserId) {
