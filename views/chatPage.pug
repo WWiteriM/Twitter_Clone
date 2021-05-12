@@ -19,6 +19,10 @@ block content
             .mainContentContainer(style='visibility: hidden')
                 .chatContainer
                     ul.chatMessages
+
+                    .typingDots
+                        img(src='/images/TypingDots.gif', alt='Typing dots')
+
                     .footer
                         textarea.inputTextBox(name='messageInput', placeholder='Type a message...')
                         button.sendMessageButton

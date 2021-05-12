@@ -493,7 +493,6 @@ function outputPosts(results, container) {
   }
 }
 
-// eslint-disable-next-line no-unused-vars
 function outputPostsWithReplies(results, container) {
   container.html('');
 
@@ -511,7 +510,6 @@ function outputPostsWithReplies(results, container) {
   });
 }
 
-// eslint-disable-next-line no-unused-vars
 function outputUsers(results, container) {
   container.html('');
 
@@ -602,7 +600,6 @@ function updateSelectedUsersHtml() {
   $('#selectedUsers').prepend(elements);
 }
 
-// eslint-disable-next-line no-unused-vars
 function getChatName(chatData) {
   let { chatName } = chatData;
 
@@ -618,4 +615,12 @@ function getOtherChatUsers(users) {
   if (users.length === 1) return users;
 
   return users.filter((user) => user._id !== userLoggedIn._id);
+}
+
+function messageReceived(newMessage) {
+  if (!$('.chatContainer').length) {
+    // notification
+  } else {
+    addChatMessageHtml(newMessage);
+  }
 }

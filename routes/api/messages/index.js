@@ -74,6 +74,7 @@ router.post('/', async (req, res) => {
   });
   messageData = await messageData.populate('sender').execPopulate();
   messageData = await messageData.populate('chat').execPopulate();
+  messageData = await User.populate(messageData, { path: 'chat.users' });
   await Chat.findByIdAndUpdate(req.body.chatId, { latestMessage: messageData }).catch(() => {
     res.sendStatus(400);
   });

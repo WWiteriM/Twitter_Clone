@@ -18,6 +18,9 @@ const chatsApiRoute = require('./routes/api/chats/index');
 
 const app = express();
 const PORT = 3000;
+const server = app.listen(PORT);
+// eslint-disable-next-line import/order
+const io = require('socket.io')(server, { pingTimeout: 60000 });
 
 app.set('view engine', 'pug');
 app.set('views', 'views');
@@ -53,4 +56,34 @@ app.get('/', requireLogin, (req, res) => {
   res.status(200).render('home', payload);
 });
 
-app.listen(PORT);
+io.on('connection', (socket) => {
+  socket.on('setup', (userData) => {
+    socket.join(userData._id);
+    socket.emit('connected');
+  });
+
+  socket.on('join', (room) => {
+    socket.join(room);
+  });
+
+  socket.on('typing', (room) => {
+    socket.in(room).emit('typing');
+  });
+
+  socket.on('stop typing', (room) => {
+    socket.in(room).emit('stop typing');
+  });
+
+  socket.on('new message', (newMessage) => {
+    const chatData = newMessage.chat;
+
+    if (!chatData[0].users) {
+      return console.log('Chat.Users not defined');
+    }
+
+    chatData[0].users.forEach((user) => {
+      if (user._id === newMessage.sender._id) return;
+      socket.in(user._id).emit('message received', newMessage);
+    });
+  });
+});
