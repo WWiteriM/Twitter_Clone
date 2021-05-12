@@ -5,16 +5,27 @@ const Message = require('../../../schemas/messageSchema');
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
-  const data = await Chat.find({ users: { $elemMatch: { $eq: req.session.user._id } } })
+router.get('/', (req, res) => {
+  Chat.find({ users: { $elemMatch: { $eq: req.session.user._id } } })
     .populate('users')
     .populate('latestMessage')
     .sort({ updatedAt: -1 })
+    .then(async (results) => {
+      if (req.params.unreadOnly !== undefined && req.params.unreadOnly === 'true') {
+        // eslint-disable-next-line no-param-reassign,array-callback-return
+        results = results.filter((r) => {
+          // eslint-disable-next-line no-unused-expressions
+          !r.latestMessage.readBy.includes(req.session.user._id);
+        });
+      }
+
+      // eslint-disable-next-line no-param-reassign
+      results = await User.populate(results, { path: 'latestMessage.sender' });
+      res.status(200).send(results);
+    })
     .catch(() => {
       res.sendStatus(400);
     });
-  const results = await User.populate(data, { path: 'latestMessage.sender' });
-  res.status(200).send(results);
 });
 
 router.get('/:chatId', async (req, res) => {

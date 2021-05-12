@@ -1,8 +1,5 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const Notification = require('../../../schemas/notificationsSchema');
-const User = require('../../../schemas/userSchema');
-const Message = require('../../../schemas/messageSchema');
 
 const router = express.Router();
 
@@ -16,17 +13,25 @@ router.get('/', (req, res) => {
 });
 
 router.get('/show', async (req, res) => {
-  const result = await Notification.find({
+  const searchObj = {
     userTo: req.session.user._id,
     notificationType: { $ne: 'newMessage' },
-  })
+  };
+
+  if (req.query.unreadOnly !== undefined && req.query.unreadOnly === 'true') {
+    searchObj.opened = false;
+  }
+
+  Notification.find(searchObj)
     .populate('userTo')
     .populate('userFrom')
     .sort({ createdAt: -1 })
+    .then((result) => {
+      res.status(200).send(result);
+    })
     .catch(() => {
       res.sendStatus(400);
     });
-  res.status(200).send(result);
 });
 
 router.put('/:id/markAsOpened', async (req, res) => {
