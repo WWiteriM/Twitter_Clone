@@ -2,11 +2,13 @@ extends layouts/main-layout
 
 block content
 
-    .resultsContainer
+    .loadingSpinnerContainer
+        img(src='/images/LoadingSpinner.gif', alt='Loading spinner')
+    .resultsContainer(style='visibility: hidden')
 
 block headerButton
-    a(href='/messages/new')
-        i.far.fa-plus-square
+    button#markNotificationAsRead
+        i.fas.fa-check-double
 
 block scripts
     script(src='/js/notifications.js')

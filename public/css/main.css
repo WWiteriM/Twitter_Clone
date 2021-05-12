@@ -826,3 +826,10 @@ button span {
     flex: 1;
 }
 
+.resultListItem.active {
+    background-color: var(--blueBackground);
+}
+
+.resultListItem.notification * {
+    pointer-events: none;
+}
