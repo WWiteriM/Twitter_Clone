@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const Chat = require('../../../schemas/chatSchema');
 const User = require('../../../schemas/userSchema');
 const Message = require('../../../schemas/messageSchema');
+const Notification = require('../../../schemas/notificationsSchema');
 
 const router = express.Router();
 
@@ -75,9 +76,12 @@ router.post('/', async (req, res) => {
   messageData = await messageData.populate('sender').execPopulate();
   messageData = await messageData.populate('chat').execPopulate();
   messageData = await User.populate(messageData, { path: 'chat.users' });
-  await Chat.findByIdAndUpdate(req.body.chatId, { latestMessage: messageData }).catch(() => {
-    res.sendStatus(400);
-  });
+  const chat = await Chat.findByIdAndUpdate(req.body.chatId, { latestMessage: messageData }).catch(
+    () => {
+      res.sendStatus(400);
+    },
+  );
+  await insertNotifications(chat, messageData);
 
   res.status(201).send(messageData);
 });
@@ -106,6 +110,18 @@ async function getChatByUserId(userLoggedIn, otherUserId) {
   ).populate('users');
 
   return result;
+}
+
+function insertNotifications(chat, message) {
+  chat.users.forEach(async (userId) => {
+    if (userId === message.sender._id.toString()) return;
+    await Notification.insertNotification(
+      userId,
+      message.sender._id,
+      'newMessage',
+      message.chat._id,
+    );
+  });
 }
 
 module.exports = router;

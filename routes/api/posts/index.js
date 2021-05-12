@@ -1,6 +1,7 @@
 const express = require('express');
 const Post = require('../../../schemas/postSchema');
 const User = require('../../../schemas/userSchema');
+const Notification = require('../../../schemas/notificationsSchema');
 
 const router = express.Router();
 
@@ -74,11 +75,21 @@ router.post('/', async (req, res) => {
     postData.replyTo = req.body.replyTo;
   }
 
-  const newPost = await Post.create(postData).catch(() => {
+  let newPost = await Post.create(postData).catch(() => {
     res.sendStatus(400);
   });
-  const post = await User.populate(newPost, { path: 'postedBy' });
-  return res.status(201).send(post);
+  newPost = await User.populate(newPost, { path: 'postedBy' });
+  newPost = await Post.populate(newPost, { path: 'replyTo' });
+  if (newPost.replyTo) {
+    await Notification.insertNotification(
+      newPost.replyTo.postedBy,
+      req.session.user._id,
+      'reply',
+      newPost._id,
+    );
+  }
+
+  return res.status(201).send(newPost);
 });
 
 router.post('/:id/retweet', async (req, res) => {
@@ -115,6 +126,10 @@ router.post('/:id/retweet', async (req, res) => {
     res.sendStatus(400);
   });
 
+  if (!deletedPost) {
+    await Notification.insertNotification(post.postedBy, userId, 'retweet', post._id);
+  }
+
   res.status(200).send(post);
 });
 
@@ -139,6 +154,10 @@ router.put('/:id/like', async (req, res) => {
   ).catch(() => {
     res.sendStatus(400);
   });
+
+  if (!isLikes) {
+    await Notification.insertNotification(post.postedBy, userId, 'postLike', post._id);
+  }
 
   res.status(200).send(post);
 });
