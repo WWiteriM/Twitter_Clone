@@ -26,7 +26,13 @@ function createChatHtml(chatData) {
   const latestMessage = getLatestMessage(chatData.latestMessage[0]);
   const image = getChatImageElement(chatData);
 
-  return `<a href='/messages/${chatData._id}' class='resultListItem'>
+  let activeClass;
+  if (!chatData.latestMessage[0] || chatData.latestMessage[0].readBy.includes(userLoggedIn._id)) {
+    activeClass = '';
+  } else {
+    activeClass = 'active';
+  }
+  return `<a href='/messages/${chatData._id}' class='resultListItem ${activeClass}'>
             ${image}
             <div class='resultsDetailsContainer ellipsis'>
                 <span class='heading ellipsis'>${chatName}</span>

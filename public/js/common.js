@@ -640,9 +640,7 @@ function getOtherChatUsers(users) {
 }
 
 function messageReceived(newMessage) {
-  if (!$('.chatContainer').length) {
-    // notification
-  } else {
+  if ($(`[data-room='${newMessage.chat[0]._id}']`).length !== 0) {
     addChatMessageHtml(newMessage);
   }
 

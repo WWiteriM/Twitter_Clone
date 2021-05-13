@@ -12,15 +12,9 @@ router.get('/', (req, res) => {
     .sort({ updatedAt: -1 })
     .then(async (results) => {
       if (req.query.unreadOnly !== undefined && req.query.unreadOnly === 'true') {
-        // eslint-disable-next-line no-param-reassign
-        results = await results.filter((r) => r.latestMessage[0] !== undefined);
         // eslint-disable-next-line no-param-reassign, max-len
         results = await results.filter(
-          (r) => r.latestMessage[0].sender.toString() !== req.session.user._id,
-        );
-        // eslint-disable-next-line no-param-reassign, max-len
-        results = await results.filter(
-          (r) => !r.latestMessage[0].readBy.includes(req.session.user._id),
+          (r) => r.latestMessage[0] && !r.latestMessage[0].readBy.includes(req.session.user._id),
         );
       }
       // eslint-disable-next-line no-param-reassign
@@ -79,6 +73,18 @@ router.post('/', async (req, res) => {
 
 router.put('/:chatId', async (req, res) => {
   await Chat.findByIdAndUpdate(req.params.chatId, req.body).catch(() => {
+    res.sendStatus(400);
+  });
+  res.sendStatus(204);
+});
+
+router.put('/:chatId/messages/markAsRead', async (req, res) => {
+  await Message.updateMany(
+    {
+      chat: req.params.chatId,
+    },
+    { $addToSet: { readBy: req.session.user._id } },
+  ).catch(() => {
     res.sendStatus(400);
   });
   res.sendStatus(204);
