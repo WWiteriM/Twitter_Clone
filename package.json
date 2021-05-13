@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "pm2 start ecosystem/ecosystem.config.js",
+    "start": "node app.js",
     "delete": "pm2 delete ecosystem/ecosystem.config.js",
     "lint": "eslint \"**/*.js\"",
     "fix": "eslint \"**/*.js\" --fix",
