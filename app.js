@@ -18,7 +18,7 @@ const usersApiRoute = require('./routes/api/users/index');
 const chatsApiRoute = require('./routes/api/chats/index');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const server = app.listen(PORT);
 // eslint-disable-next-line import/order
 const io = require('socket.io')(server, { pingTimeout: 60000 });
