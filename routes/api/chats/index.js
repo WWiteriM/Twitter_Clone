@@ -27,8 +27,7 @@ router.get('/', (req, res) => {
       results = await User.populate(results, { path: 'latestMessage.sender' });
       res.status(200).send(results);
     })
-    .catch((error) => {
-      console.log(error);
+    .catch(() => {
       res.sendStatus(400);
     });
 });

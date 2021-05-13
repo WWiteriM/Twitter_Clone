@@ -34,6 +34,21 @@ router.get('/show', async (req, res) => {
     });
 });
 
+router.get('/latest', async (req, res) => {
+  Notification.findOne({
+    userTo: req.session.user._id,
+  })
+    .populate('userTo')
+    .populate('userFrom')
+    .sort({ createdAt: -1 })
+    .then((result) => {
+      res.status(200).send(result);
+    })
+    .catch(() => {
+      res.sendStatus(400);
+    });
+});
+
 router.put('/:id/markAsOpened', async (req, res) => {
   await Notification.findByIdAndUpdate(req.params.id, { opened: true }).catch(() => {
     res.sendStatus(400);

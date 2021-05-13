@@ -856,3 +856,18 @@ button span {
 #notificationBadge.active {
     visibility: visible;
 }
+
+#notificationList {
+    position: fixed;
+    top: 5px;
+    right: 5px;
+    width: 350px;
+    background-color: #ffffff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+#notificationList .active {
+    background-color: #ffffff;
+}
