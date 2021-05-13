@@ -11,19 +11,24 @@ router.get('/', (req, res) => {
     .populate('latestMessage')
     .sort({ updatedAt: -1 })
     .then(async (results) => {
-      if (req.params.unreadOnly !== undefined && req.params.unreadOnly === 'true') {
-        // eslint-disable-next-line no-param-reassign,array-callback-return
-        results = results.filter((r) => {
-          // eslint-disable-next-line no-unused-expressions
-          !r.latestMessage.readBy.includes(req.session.user._id);
-        });
+      if (req.query.unreadOnly !== undefined && req.query.unreadOnly === 'true') {
+        // eslint-disable-next-line no-param-reassign
+        results = await results.filter((r) => r.latestMessage[0] !== undefined);
+        // eslint-disable-next-line no-param-reassign, max-len
+        results = await results.filter(
+          (r) => r.latestMessage[0].sender.toString() !== req.session.user._id,
+        );
+        // eslint-disable-next-line no-param-reassign, max-len
+        results = await results.filter(
+          (r) => !r.latestMessage[0].readBy.includes(req.session.user._id),
+        );
       }
-
       // eslint-disable-next-line no-param-reassign
       results = await User.populate(results, { path: 'latestMessage.sender' });
       res.status(200).send(results);
     })
-    .catch(() => {
+    .catch((error) => {
+      console.log(error);
       res.sendStatus(400);
     });
 });
