@@ -27,7 +27,11 @@ function createChatHtml(chatData) {
   const image = getChatImageElement(chatData);
 
   let activeClass;
-  if (!chatData.latestMessage[0] || chatData.latestMessage[0].readBy.includes(userLoggedIn._id)) {
+  if (
+    !chatData.latestMessage[0] ||
+    chatData.latestMessage[0].sender.toString() === userLoggedIn._id ||
+    chatData.latestMessage[0].readBy.includes(userLoggedIn._id)
+  ) {
     activeClass = '';
   } else {
     activeClass = 'active';

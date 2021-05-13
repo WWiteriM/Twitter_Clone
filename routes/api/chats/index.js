@@ -14,7 +14,10 @@ router.get('/', (req, res) => {
       if (req.query.unreadOnly !== undefined && req.query.unreadOnly === 'true') {
         // eslint-disable-next-line no-param-reassign, max-len
         results = await results.filter(
-          (r) => r.latestMessage[0] && !r.latestMessage[0].readBy.includes(req.session.user._id),
+          (r) =>
+            r.latestMessage[0].sender.toString() !== req.session.user._id &&
+            r.latestMessage[0] &&
+            !r.latestMessage[0].readBy.includes(req.session.user._id),
         );
       }
       // eslint-disable-next-line no-param-reassign
